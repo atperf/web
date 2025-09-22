@@ -21,7 +21,8 @@ function initMobileMenu() {
         });
 
         // Close menu when clicking on nav links
-        document.querySelectorAll('.nav-link').forEach(link => {
+        const menuLinks = document.querySelectorAll('.nav-link, .language-link');
+        menuLinks.forEach(link => {
             link.addEventListener('click', function() {
                 hamburger.classList.remove('active');
                 navMenu.classList.remove('active');
@@ -42,9 +43,26 @@ function initMobileMenu() {
 function initSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const targetSelector = this.getAttribute('href');
+
+            if (!targetSelector) {
+                return;
+            }
+
+            if (targetSelector.trim() === '#') {
+                e.preventDefault();
+                return;
+            }
+
+            let target = null;
+            try {
+                target = document.querySelector(targetSelector);
+            } catch (error) {
+                console.warn('Invalid smooth scroll target selector:', targetSelector, error);
+            }
+
             if (target) {
+                e.preventDefault();
                 const headerOffset = 80;
                 const elementPosition = target.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
@@ -112,7 +130,7 @@ function initFormHandling() {
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             // Get form data
             const formData = new FormData(this);
             const formObject = {};
@@ -120,15 +138,31 @@ function initFormHandling() {
                 formObject[key] = value;
             });
 
+            console.log('Form submission data:', formObject);
+
+            const locale = document.documentElement.lang || 'en';
+            const formMessages = {
+                en: {
+                    sending: 'Sending...',
+                    success: 'Message sent successfully!'
+                },
+                fr: {
+                    sending: 'Envoi...',
+                    success: 'Message envoyé avec succès !'
+                }
+            };
+
+            const messages = formMessages[locale] || formMessages.en;
+
             // Show loading state
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Sending...';
+            submitBtn.textContent = messages.sending;
             submitBtn.disabled = true;
 
             // Simulate form submission (replace with actual API call)
             setTimeout(() => {
-                showNotification('Message sent successfully!', 'success');
+                showNotification(messages.success, 'success');
                 this.reset();
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
@@ -139,12 +173,12 @@ function initFormHandling() {
 
 // Test Tool Button Functionality
 function initTestToolButtons() {
-    const testButtons = document.querySelectorAll('.btn-test');
-    
+    const testButtons = document.querySelectorAll('.btn-test, .test-tool-link');
+
     testButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             // Add click animation
             this.style.transform = 'scale(0.95)';
             setTimeout(() => {
