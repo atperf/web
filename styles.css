@@ -52,6 +52,30 @@ body {
     gap: 2rem;
 }
 
+.nav-item.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.language-link {
+    text-decoration: none;
+    color: #666;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.language-link:hover,
+.language-link.active {
+    color: #FF6B35;
+}
+
+.language-separator {
+    color: #ccc;
+    font-weight: 500;
+}
+
 .nav-link {
     text-decoration: none;
     color: #333;
@@ -602,6 +626,10 @@ body {
 
     .nav-buttons {
         display: none;
+    }
+
+    .nav-item.language-switcher {
+        justify-content: center;
     }
 
     .hero-content {
